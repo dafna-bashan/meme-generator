@@ -8,12 +8,51 @@
     <link rel="stylesheet" href="./css/style.css">
     <title>Meme Generator</title>
 </head>
-<h1>meme</h1>
-<div class="canvas-container">
-    <canvas id="my-canvas" height="550" width="550"></canvas>
-</div>
+<h1 hidden>load font</h1>
 
-<body>
+<body onload="onInit()">
+    <h1>meme</h1>
+    <div class="gallery-container">
+        <div class="image-item-1 placeholder" data-id="1" onclick="onUpdateImg(this.dataset.id)"><img src="./meme-imgs-square/1.jpg" alt="" srcset=""></div>
+        <div class="image-item-2 placeholder" data-id="2" onclick="onUpdateImg(this.dataset.id)"><img src="./meme-imgs-square/2.jpg" alt="" srcset=""></div>
+        <div class="image-item-3 placeholder" data-id="3" onclick="onUpdateImg(this.dataset.id)"><img src="./meme-imgs-square/3.jpg" alt="" srcset=""></div>
+    </div>
+    <div class="edit-container">
+        <div class="canvas-container">
+            <canvas id="my-canvas" height="450" width="450"></canvas>
+        </div>
+        <div class="edit-options">
+            <div>
+                <input type="text" name="text" id="text" placeholder="Enter your text" onkeyup="onUpdateText(this.value)">
+            </div>
+            <div>
+                <button data-action="down" onclick="onChangeLinePos(this.dataset.action)"><img src="./icons/arrow-down.png" alt="" srcset=""></button>
+                <button data-action="up" onclick="onChangeLinePos(this.dataset.action)"><img src="./icons/arrow-up.png" alt="" srcset=""></button>
+                <button onclick="onSwitchLines()"><img src="./icons/up-and-down-opposite-double-arrows-side-by-side.png" alt="" srcset=""></button>
+                <button><img src="./icons/add.png" alt="" srcset=""></button>
+                <button><img src="./icons/trash.png" alt="" srcset=""></button>
+            </div>
+            <div>
+                <button data-action="decrease" onclick="onChangeTextSize(this.dataset.action)"><img src="./icons/decrease font - icon.png" alt="" srcset=""></button>
+                <button data-action="increase" onclick="onChangeTextSize(this.dataset.action)"><img src="./icons/increase font - icon.png" alt="" srcset=""></button>
+                <button data-id="left" onclick="onSetAlignText(this.dataset.id)"><img src="./icons/align-to-left.png" alt="" srcset=""></button>
+                <button data-id="center" onclick="onSetAlignText(this.dataset.id)"><img src="./icons/center-text-alignment.png" alt="" srcset=""></button>
+                <button data-id="right" onclick="onSetAlignText(this.dataset.id)"><img src="./icons/align-to-right.png" alt="" srcset=""></button>
+            </div>
+            <div>
+                <label for="font">Font:</label>
+                <select name="font" id="font" onchange="onSetFont(this.value)">
+                <option value="impact">Impact</option>
+                <option value="roboto">Roboto</option>
+                <option value="oswald">Oswald</option>
+                </select>
+                <label for="stroke-color"><img src="./icons/text-stroke.png" alt="" srcset=""></label>
+                <input hidden type="color" name="stroke-color" id="stroke-color" class="stroke-color" onchange="onSetStrokeColor(this.value)">
+                <label for="fill-color"><img src="./icons/paint-board-and-brush.png" alt="" srcset=""></label>
+                <input hidden type="color" name="fill-color" id="fill-color" class="fill-color" value="#ffffff" onchange="onSetFillColor(this.value)">
+            </div>
+        </div>
+    </div>
     <script src="./js/storage-service.js"></script>
     <script src="./js/upload-service.js"></script>
     <script src="./js/meme-service.js"></script>
