@@ -16,6 +16,7 @@ function onInit() {
     // resizeCanvas()
     addListeners();
     renderGallery();
+    renderKeyWords();
 }
 
 
@@ -28,8 +29,12 @@ function resizeCanvas() {
 }
 
 function renderGallery() {
+    document.querySelector('.search input').hidden = false;
+    document.querySelector('.memes').classList.remove('active');
+    document.querySelector('.gallery').classList.add('active');
     document.querySelector('.gallery-container').style.display = 'grid';
-    var imgs = getImgs();
+    // var imgs = getImgs();
+    var imgs = filterImgs();
     var imgsCards = imgs.map(function(img) {
         return `<div class="placeholder" data-id="${img.id}" onclick="onSelectImg(this.dataset.id)"><img src="${img.url}"></div>`
     }).join('');
@@ -58,22 +63,45 @@ function renderMeme(id) {
     }
     document.querySelector('.share-container').innerHTML = '';
     document.querySelector('.share-container').style.display = 'none';
+    document.querySelector('.search input').hidden = true;
 }
 
 function renderSavedMemes() {
+    document.querySelector('.search input').hidden = true;
     document.querySelector('.edit-container').style.display = 'none';
     document.querySelector('.gallery-container').style.display = 'grid';
+    document.querySelector('.gallery').classList.remove('active');
+    document.querySelector('.memes').classList.add('active');
     var memes = getSavedMemes();
-    var memesCards = memes.map(function(meme) {
-        return `<div class="placeholder" data-id="${meme.selectedImgId}" onclick="onSelectMeme('${meme.id}')"><img src="./meme-imgs-square/${meme.selectedImgId}.jpg"></div>`
-    }).join('');
+    if (!memes || !memes.length) {
+        var memesCards = `<h4>no saved memes yet</h4>`;
+    } else {
+        var memesCards = memes.map(function(meme) {
+            return `<div class="placeholder">
+            <button class="remove" onclick="onRemoveMeme('${meme.id}')">X</button><img src="${meme.imgUrl}" onclick="onSelectMeme('${meme.id}')"></div>`
+        }).join('');
+    }
     document.querySelector('.gallery-container').innerHTML = memesCards;
 
 }
 
-function onSaveMeme() {
-    // gCtx.save();
-    saveMeme();
+function onFilterImgs(keyWord) {
+    setFilterImgs(keyWord);
+    filterImgs(keyWord);
+    renderGallery();
+}
+
+function renderKeyWords() {
+    var keyWords = Object.keys(gKeywords).map(function(keyWord) {
+        return `<option value="${keyWord}">`;
+
+    }).join('');
+    document.querySelector('#keywords').innerHTML = keyWords;
+}
+
+function onRemoveMeme(id) {
+    removeMeme(id);
+    renderSavedMemes();
 }
 
 function renderButtons() {
@@ -85,12 +113,6 @@ function renderButtons() {
 }
 
 function drawText(text, x, y, size, align, fillColor, strokeColor, fontFamily) {
-    // var textMetrics = gCtx.measureText(text);
-    // if (textMetrics.width <= gCanvas.width) {
-    //     document.querySelector('input[name=text]').disabled = 'false';
-    // } else {
-    //     document.querySelector('input[name=text]').disabled = 'true';
-    // }
     gCtx.lineWidth = 2;
     gCtx.strokeStyle = strokeColor;
     gCtx.fillStyle = fillColor;
@@ -102,7 +124,7 @@ function drawText(text, x, y, size, align, fillColor, strokeColor, fontFamily) {
 
 
 function drawBoundingBox(currLine) {
-    var textMetrics = gCtx.measureText(currLine.txt);
+    const textMetrics = gCtx.measureText(currLine.txt);
     console.log(textMetrics);
     const x = currLine.pos.x;
     const y = currLine.pos.y;
@@ -141,6 +163,7 @@ function onChangeLinePos(btnAction) {
 }
 
 function onSelectMeme(id) {
+    updateCurrMeme(id);
     renderMeme(id);
     renderButtons();
     document.querySelector('.gallery-container').style.display = 'none';
@@ -148,9 +171,7 @@ function onSelectMeme(id) {
 }
 
 function onSelectImg(imgId) {
-    // updateImg(imgId);
     createMeme(imgId);
-    console.log(imgId);
     renderMeme();
     renderButtons();
     document.querySelector('.gallery-container').style.display = 'none';
@@ -207,13 +228,22 @@ function onRemoveLine() {
 
 function downloadCanvas(elLink) {
     const data = gCanvas.toDataURL();
+    console.log(data);
     elLink.href = data;
     elLink.download = 'my-meme';
+}
+
+function onSaveMeme() {
+    // gCtx.save();
+    var image = gCanvas.toDataURL();
+    saveMeme(image);
+    renderSavedMemes();
 }
 
 function onCloseMeme() {
     document.querySelector('.gallery-container').style.display = 'grid';
     document.querySelector('.edit-container').style.display = 'none';
+    renderGallery();
 }
 
 
@@ -221,6 +251,7 @@ function toggleMenu() {
     document.body.classList.toggle('menu-open');
     document.querySelector('.main-nav a').classList.toggle('justify-content');
 }
+
 
 // ----------DRAG AND DROP----------
 
@@ -230,18 +261,18 @@ function getTexts() {
     return texts;
 }
 
-var texts = getTexts();
+var gTexts = getTexts();
 var gStartPos;
-var gSelectedText = -1;
+var gSelectedIdx = -1;
 const gTouchEvs = ['touchstart', 'touchmove', 'touchend']
 
 function addListeners() {
     addMouseListeners()
     addTouchListeners()
-    window.addEventListener('resize', () => {
-        // resizeCanvas()
-        renderMeme()
-    })
+        // window.addEventListener('resize', () => {
+        //     // resizeCanvas()
+        //     renderMeme()
+        // })
 }
 
 function addMouseListeners() {
@@ -257,67 +288,58 @@ function addTouchListeners() {
 }
 
 function isTextClicked(x, y, textIdx) {
-    var text = texts[textIdx];
-    text.width = gCtx.measureText(text.txt).width;
-    text.height = 40;
-    console.log(text.width, text.height);
-    return (x >= text.pos.x - (text.width / 2) &&
-        x <= text.pos.x + (text.width / 2) &&
-        y >= text.pos.y - text.height &&
-        y <= text.pos.y);
-    // const { pos } = gSelected;
-    // const distance = Math.sqrt((pos.x - clickedPos.x) ** 2 + (pos.y - clickedPos.y) ** 2)
-    // return distance <= gCircle.size
+    gTexts = getTexts();
+    var text = gTexts[textIdx];
+    console.log(text);
+    var textMetrics = gCtx.measureText(text.txt);
+    // text.width = gCtx.measureText(text.txt).width;
+    // text.height = text.size;
+    // console.log(width, height);
+    return (x >= text.pos.x - textMetrics.actualBoundingBoxLeft &&
+        x <= text.pos.x + textMetrics.actualBoundingBoxRight &&
+        y >= text.pos.y - textMetrics.actualBoundingBoxAscent &&
+        y <= text.pos.y + textMetrics.actualBoundingBoxDescent);
+
 }
 
 function onDown(ev) {
-    console.log('down');
-    // gStartPos.x = parseInt(e.clientX - offsetX);
-    // gStartPos.y = parseInt(e.clientY - offsetY);
-    const pos = getEvPos(ev)
-        // Put your mousedown stuff here
-    for (var i = 0; i < texts.length; i++) {
+    gTexts = getTexts();
+    const pos = getEvPos(ev);
+    for (var i = 0; i < gTexts.length; i++) {
         console.log(isTextClicked(pos.x, pos.y, i));
         if (isTextClicked(pos.x, pos.y, i)) {
-            gSelectedText = i;
-            updateSelectedLineIdx(gSelectedText);
-            gStartPos = pos
-            document.body.style.cursor = 'grabbing'
+            gSelectedIdx = i;
+            updateSelectedLineIdx(gSelectedIdx);
+            gStartPos = pos;
+            document.body.style.cursor = 'grabbing';
         }
     }
-    // if (!isCirlceClicked(pos)) return
-    // gSelected.isDragging = true
-
-
 }
 
-
 function onMove(ev) {
-    console.log('move');
-    if (gSelectedText >= 0) {
-        const pos = getEvPos(ev)
-        const dx = pos.x - gStartPos.x
-        const dy = pos.y - gStartPos.y
-        texts[gSelectedText].pos.x += dx
-        texts[gSelectedText].pos.y += dy
-        gStartPos = pos
-        updateTextPosition(gStartPos)
-        renderMeme()
+    if (gSelectedIdx >= 0) {
+        const pos = getEvPos(ev);
+        var text = gTexts[gSelectedIdx];
+        var textMetrics = gCtx.measureText(text.txt);
+        if (text.pos.x - textMetrics.actualBoundingBoxLeft === 0 || text.pos.x + textMetrics.actualBoundingBoxRight === gCanvas.width ||
+            text.pos.y - textMetrics.actualBoundingBoxAscent === 0 || text.pos.y + textMetrics.actualBoundingBoxDescent === gCanvas.height) {
+            return;
+        }
+        const dx = pos.x - gStartPos.x;
+        const dy = pos.y - gStartPos.y;
+        gTexts[gSelectedIdx].pos.x += dx;
+        gTexts[gSelectedIdx].pos.y += dy;
+        gStartPos = pos;
+        renderMeme();
     }
 }
 
 function onUp() {
-    // gSelected.isDragging = false
-    console.log('up');
-    gSelectedText = -1
-    document.body.style.cursor = 'grab'
+    gSelectedIdx = -1;
+    document.body.style.cursor = 'grab';
 }
 
-// function resizeCanvas() {
-//     const elContainer = document.querySelector('.canvas-container')
-//     gCanvas.width = elContainer.offsetWidth
-//     gCanvas.height = elContainer.offsetHeight
-// }
+
 
 function getEvPos(ev) {
     var pos = {
@@ -325,16 +347,21 @@ function getEvPos(ev) {
         y: ev.offsetY
     }
     if (gTouchEvs.includes(ev.type)) {
-        ev.preventDefault()
-        ev = ev.changedTouches[0]
+        ev.preventDefault();
+        ev = ev.changedTouches[0];
         pos = {
             x: ev.pageX - ev.target.offsetLeft - ev.target.clientLeft,
             y: ev.pageY - ev.target.offsetTop - ev.target.clientTop
         }
     }
-    return pos
+    return pos;
 }
 
+// function resizeCanvas() {
+//     const elContainer = document.querySelector('.canvas-container')
+//     gCanvas.width = elContainer.offsetWidth
+//     gCanvas.height = elContainer.offsetHeight
+// }
 
 // function _loadFont(fontname) {
 //     var canvas = document.createElement("canvas");

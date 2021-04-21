@@ -6,9 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/style.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="./favicon_io/site.webmanifest">
     <title>Meme Generator</title>
 </head>
-<h1 hidden>load font</h1>
+<h1>load font</h1>
+<h2>load font</h2>
+<h3>load font</h3>
 
 <body onload="onInit()">
     <div class="main-screen" onclick="toggleMenu()"></div>
@@ -16,19 +22,24 @@
         <div class="nav-container container flex space-between align-center">
             <div class="logo">Meme Generator</div>
             <ul class="main-nav flex clean-list justify-content align-center">
-                <li><a class="flex justify-center align-center active" onclick="renderGallery()" href="#">Gallery</a></li>
-                <li><a class="flex justify-center align-center" onclick="renderSavedMemes()" href="#">Memes</a></li>
+                <li><a class="flex justify-center align-center gallery active" onclick="renderGallery()" href="#">Gallery</a></li>
+                <li><a class="flex justify-center align-center memes" onclick="renderSavedMemes()" href="#">Memes</a></li>
                 <li><a class="flex justify-center align-center" href="#">About</a></li>
             </ul>
             <button class="btn-menu" onclick="toggleMenu()">☰</button>
         </div>
     </header>
-    <div class="main-content container flex">
+    <div class="main-content container ">
+        <div class="search container">
+            <!-- <label for="keyword">Search keyword</label> -->
+            <input list="keywords" name="keyword" id="keyword" onkeyup="onFilterImgs(this.value)" placeholder="search keyword">
+            <datalist id="keywords"></datalist>
+        </div>
         <div class="gallery-container container"></div>
-        <div class="edit-container container">
+        <div class="edit-container container flex">
             <button class="close" onclick="onCloseMeme()">X</button>
             <div class="canvas-container container">
-                <canvas id="my-canvas" height="500" width="500"></canvas>
+                <canvas id="my-canvas" height="350" width="350"></canvas>
             </div>
             <div class="control container">
                 <div class="edit text flex">
