@@ -34,20 +34,20 @@ function createMemes() {
     if (!memes || !memes.length) {
         memes = [{
                 id: makeId(),
-                imgUrl: `saved-meme-ex/2.png`,
+                imgUrl: `./saved-meme-ex/2.png`,
                 selectedImgId: 1,
                 selectedLineIdx: 0,
                 lines: [
-                    { txt: 'my meme', size: 40, align: 'center', fillColor: '#ffffff', strokeColor: '#000000', fontFamily: 'impact', pos: { x: 250, y: 80 }, isDragging: false }
+                    { txt: 'my meme', size: 40, align: 'center', fillColor: '#ffffff', strokeColor: '#000000', fontFamily: 'impact', pos: { x: 175, y: 60 } }
                 ]
             },
             {
                 id: makeId(),
-                imgUrl: `saved-meme-ex/1.png`,
+                imgUrl: `./saved-meme-ex/1.png`,
                 selectedImgId: 2,
                 selectedLineIdx: 0,
                 lines: [
-                    { txt: 'my meme', size: 40, align: 'center', fillColor: '#ffffff', strokeColor: '#000000', fontFamily: 'impact', pos: { x: 250, y: 80 }, isDragging: false }
+                    { txt: 'my meme', size: 40, align: 'center', fillColor: '#ffffff', strokeColor: '#000000', fontFamily: 'impact', pos: { x: 175, y: 60 } }
                 ]
             }
         ];
@@ -106,8 +106,8 @@ function createMeme(selectedImgId) {
         selectedImgId,
         selectedLineIdx: 0,
         lines: [
-            { txt: 'edit this text', size: 40, align: 'center', fillColor: '#ffffff', strokeColor: '#000000', fontFamily: 'impact', pos: { x: 175, y: 60 }, isDragging: false },
-            { txt: 'edit this text', size: 40, align: 'center', fillColor: '#ffffff', strokeColor: '#000000', fontFamily: 'impact', pos: { x: 175, y: 320 }, isDragging: false }
+            { txt: 'edit this text', size: 40, align: 'center', fillColor: '#ffffff', strokeColor: '#000000', fontFamily: 'impact', pos: { x: 175, y: 60 } },
+            { txt: 'edit this text', size: 40, align: 'center', fillColor: '#ffffff', strokeColor: '#000000', fontFamily: 'impact', pos: { x: 175, y: 320 } }
         ]
     };
     gMeme = meme;
@@ -193,18 +193,13 @@ function setAlignText(alignTo) {
     switch (alignTo) {
         case 'left':
             gMeme.lines[gMeme.selectedLineIdx].align = 'end';
-            // console.log('left');
             break;
         case 'center':
             gMeme.lines[gMeme.selectedLineIdx].align = 'center';
-            // console.log('center');
             break;
         case 'right':
             gMeme.lines[gMeme.selectedLineIdx].align = 'start';
-            // console.log('right');
             break;
-            // default:
-            //     break;
     }
 }
 
@@ -212,13 +207,13 @@ function addLine() {
     var y;
     var spliceIdx;
     if (gMeme.lines.length === 0) {
-        y = 80;
+        y = 60;
         spliceIdx = 0;
     } else if (gMeme.lines.length === 1) {
-        y = 450;
+        y = 320;
         spliceIdx = 1;
     } else {
-        y = 250;
+        y = 175;
         spliceIdx = 1;
     }
     gMeme.lines.splice(spliceIdx, 0, {
@@ -228,7 +223,7 @@ function addLine() {
         fillColor: '#ffffff',
         strokeColor: '#000000',
         fontFamily: 'impact',
-        pos: { x: 250, y }
+        pos: { x: 175, y }
     })
 }
 

@@ -32,6 +32,7 @@ function renderGallery() {
     document.querySelector('.search input').hidden = false;
     document.querySelector('.memes').classList.remove('active');
     document.querySelector('.gallery').classList.add('active');
+    document.querySelector('.edit-container').style.display = 'none';
     document.querySelector('.gallery-container').style.display = 'grid';
     // var imgs = getImgs();
     var imgs = filterImgs();
@@ -125,7 +126,7 @@ function drawText(text, x, y, size, align, fillColor, strokeColor, fontFamily) {
 
 function drawBoundingBox(currLine) {
     const textMetrics = gCtx.measureText(currLine.txt);
-    console.log(textMetrics);
+    // console.log(textMetrics);
     const x = currLine.pos.x;
     const y = currLine.pos.y;
     gCtx.lineWidth = 1;
@@ -237,13 +238,17 @@ function onSaveMeme() {
     // gCtx.save();
     var image = gCanvas.toDataURL();
     saveMeme(image);
-    renderSavedMemes();
+    // renderSavedMemes();  
 }
 
 function onCloseMeme() {
-    document.querySelector('.gallery-container').style.display = 'grid';
     document.querySelector('.edit-container').style.display = 'none';
-    renderGallery();
+    document.querySelector('.gallery-container').style.display = 'grid';
+    if (document.querySelector('.gallery-container').classList.contains('active')) {
+        renderGallery();
+    } else {
+        renderSavedMemes();
+    }
 }
 
 
@@ -310,8 +315,10 @@ function onDown(ev) {
         if (isTextClicked(pos.x, pos.y, i)) {
             gSelectedIdx = i;
             updateSelectedLineIdx(gSelectedIdx);
+            console.log(gSelectedIdx);
             gStartPos = pos;
             document.body.style.cursor = 'grabbing';
+            renderButtons();
         }
     }
 }
