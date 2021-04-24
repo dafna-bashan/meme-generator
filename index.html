@@ -46,18 +46,18 @@
                     <input type="text" name="text" id="text" placeholder="Enter your text" onkeyup="onUpdateText(this.value)" class="flex-1">
                 </div>
                 <div class="edit edit-options btn-icon flex space-between">
-                    <button data-action="down" onclick="onChangeLinePos(this.dataset.action)"><img src="./icons/arrow-down.png"></button>
-                    <button data-action="up" onclick="onChangeLinePos(this.dataset.action)"><img src="./icons/arrow-up.png"></button>
+                    <button onclick="onChangeLinePos('down')"><img src="./icons/arrow-down.png"></button>
+                    <button onclick="onChangeLinePos('up')"><img src="./icons/arrow-up.png"></button>
                     <button onclick="onSwitchLines()"><img src="./icons/up-and-down-opposite-double-arrows-side-by-side.png"></button>
                     <button onclick="onAddLine()"><img src="./icons/add.png"></button>
                     <button onclick="onRemoveLine()"><img src="./icons/trash.png"></button>
                 </div>
                 <div class="edit edit-text btn-icon flex space-between">
-                    <button data-action="decrease" onclick="onChangeTextSize(this.dataset.action)"><img src="./icons/decrease font - icon.png"></button>
-                    <button data-action="increase" onclick="onChangeTextSize(this.dataset.action)"><img src="./icons/increase font - icon.png"></button>
-                    <button data-id="left" onclick="onSetAlignText(this.dataset.id)"><img src="./icons/align-to-left.png"></button>
-                    <button data-id="center" onclick="onSetAlignText(this.dataset.id)"><img src="./icons/center-text-alignment.png"></button>
-                    <button data-id="right" onclick="onSetAlignText(this.dataset.id)"><img src="./icons/align-to-right.png"></button>
+                    <button onclick="onChangeTextSize('decrease')"><img src="./icons/decrease font - icon.png"></button>
+                    <button onclick="onChangeTextSize('increase')"><img src="./icons/increase font - icon.png"></button>
+                    <button onclick="onSetAlignText('left')"><img src="./icons/align-to-left.png"></button>
+                    <button onclick="onSetAlignText('center')"><img src="./icons/center-text-alignment.png"></button>
+                    <button onclick="onSetAlignText('right')"><img src="./icons/align-to-right.png"></button>
                 </div>
                 <div class="edit font space-between flex">
                     <label for="font">Font:</label>

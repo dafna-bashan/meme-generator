@@ -37,7 +37,7 @@ function renderGallery() {
     // var imgs = getImgs();
     var imgs = filterImgs();
     var imgsCards = imgs.map(function(img) {
-        return `<div class="placeholder" data-id="${img.id}" onclick="onSelectImg(this.dataset.id)"><img src="${img.url}"></div>`
+        return `<div class="placeholder" onclick="onSelectImg('${img.id}')"><img src="${img.url}"></div>`
     }).join('');
     document.querySelector('.gallery-container').innerHTML = imgsCards;
 }
@@ -244,7 +244,7 @@ function onSaveMeme() {
 function onCloseMeme() {
     document.querySelector('.edit-container').style.display = 'none';
     document.querySelector('.gallery-container').style.display = 'grid';
-    if (document.querySelector('.gallery-container').classList.contains('active')) {
+    if (document.querySelector('.gallery').classList.contains('active')) {
         renderGallery();
     } else {
         renderSavedMemes();
